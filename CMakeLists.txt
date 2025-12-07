@@ -7,7 +7,7 @@ include(DownloadUserver)
 find_package(userver COMPONENTS core QUIET)
 if(NOT userver_FOUND)
   # Tries TRY_DIR first, falls back to downloading userver from GitHub using CPM.
-  download_userver(TRY_DIR third_party/userver VERSION 2.14)
+  download_userver(TRY_DIR third_party/userver VERSION 2.13)
 endif()
 
 userver_setup_environment()
