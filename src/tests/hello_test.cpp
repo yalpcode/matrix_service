@@ -1,4 +1,4 @@
-#include "hello.hpp"
+#include <matrix_service/core/greeting.hpp>
 
 #include <userver/utest/utest.hpp>
 

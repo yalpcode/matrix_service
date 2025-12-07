@@ -1,18 +1,20 @@
-version: "2.3"
-
 services:
-    service_template-container:
-        image: ghcr.io/userver-framework/ubuntu-22.04-userver-pg:latest
+    matrix_service:
+        build:
+          context: .
+          dockerfile: Dockerfile
+        platform: ${DOCKER_DEFAULT_PLATFORM:-linux/amd64}
         privileged: true
         network_mode: bridge
         environment:
           - PREFIX=${PREFIX:-~/.local}
-          - CCACHE_DIR=/service_template/.ccache
+          - CCACHE_DIR=/matrix_service/.ccache
           - CORES_DIR=/cores
+          - USERVER_DISABLE_STACK_USAGE_MONITOR=1
+          - USERVER_DISABLE_USERFAULTFD=1
         volumes:
-          - .:/service_template:rw
+          - .:/matrix_service:rw
         ports:
           - 8080:8080
-        working_dir: /service_template
-        entrypoint:
-          - ./tests/run_as_user.sh
+        working_dir: /matrix_service
+        command: ["make", "cmake-debug", "build-debug", "start-debug"]
