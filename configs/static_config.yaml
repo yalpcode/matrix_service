@@ -33,7 +33,9 @@ components_manager:
 
         http-client:
             load-enabled: $is_testing
+        http-client-core:
             fs-task-processor: fs-task-processor
+            user-agent: matrix_service
 
         dns-client:
             fs-task-processor: fs-task-processor

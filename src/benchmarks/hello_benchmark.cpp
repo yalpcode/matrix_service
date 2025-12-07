@@ -1,4 +1,4 @@
-#include "hello.hpp"
+#include <matrix_service/core/greeting.hpp>
 
 #include <cstdint>   // for std::uint64_t
 #include <iterator>  // for std::size

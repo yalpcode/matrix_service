@@ -1,18 +1,20 @@
-version: "2.3"
-
 services:
-    service_template-container:
-        image: ghcr.io/userver-framework/ubuntu-22.04-userver-pg:latest
-        privileged: true
-        network_mode: bridge
-        environment:
-          - PREFIX=${PREFIX:-~/.local}
-          - CCACHE_DIR=/service_template/.ccache
-          - CORES_DIR=/cores
-        volumes:
-          - .:/service_template:rw
-        ports:
-          - 8080:8080
-        working_dir: /service_template
-        entrypoint:
-          - ./tests/run_as_user.sh
+  matrix_service:
+    platform: ${DOCKER_DEFAULT_PLATFORM:-linux/amd64}
+    image: ghcr.io/userver-framework/ubuntu-22.04-userver:latest
+    working_dir: /matrix_service
+    privileged: true
+    environment:
+      CCACHE_DIR: /matrix_service/.ccache
+      CORES_DIR: /cores
+      USERVER_GTEST_ENABLE_STACK_USAGE_MONITOR: "0"
+      USERVER_ENABLE_STACK_USAGE_MONITOR: "0"
+      TESTSUITE_ALLOW_ROOT: "1"
+      UID: ${UID:-1000}
+      GID: ${GID:-1000}
+    volumes:
+      - ./:/matrix_service:rw
+    ports:
+      - "8080:8080"
+    entrypoint: ["./run_as_user.sh", "${UID:-1000}", "${GID:-1000}"]
+    command: ["tail", "-f", "/dev/null"]
