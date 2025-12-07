@@ -1,20 +1,20 @@
 services:
-  matrix_service:
-    platform: ${DOCKER_DEFAULT_PLATFORM:-linux/amd64}
-    image: ghcr.io/userver-framework/ubuntu-22.04-userver:latest
-    working_dir: /matrix_service
-    privileged: true
-    environment:
-      CCACHE_DIR: /matrix_service/.ccache
-      CORES_DIR: /cores
-      USERVER_GTEST_ENABLE_STACK_USAGE_MONITOR: "0"
-      USERVER_ENABLE_STACK_USAGE_MONITOR: "0"
-      TESTSUITE_ALLOW_ROOT: "1"
-      UID: ${UID:-1000}
-      GID: ${GID:-1000}
-    volumes:
-      - ./:/matrix_service:rw
-    ports:
-      - "8080:8080"
-    entrypoint: ["./run_as_user.sh", "${UID:-1000}", "${GID:-1000}"]
-    command: ["tail", "-f", "/dev/null"]
+    matrix_service:
+        build:
+          context: .
+          dockerfile: Dockerfile
+        platform: ${DOCKER_DEFAULT_PLATFORM:-linux/amd64}
+        privileged: true
+        network_mode: bridge
+        environment:
+          - PREFIX=${PREFIX:-~/.local}
+          - CCACHE_DIR=/matrix_service/.ccache
+          - CORES_DIR=/cores
+          - USERVER_DISABLE_STACK_USAGE_MONITOR=1
+          - USERVER_DISABLE_USERFAULTFD=1
+        volumes:
+          - .:/matrix_service:rw
+        ports:
+          - 8080:8080
+        working_dir: /matrix_service
+        command: ["make", "cmake-debug", "build-debug", "start-debug"]
