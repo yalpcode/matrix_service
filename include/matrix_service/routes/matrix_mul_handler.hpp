@@ -4,6 +4,6 @@
 
 namespace matrix_service {
 
-void AppendHello(userver::components::ComponentList& component_list);
+void AppendMatrixMul(userver::components::ComponentList& component_list);
 
 }  // namespace matrix_service

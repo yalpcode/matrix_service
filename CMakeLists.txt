@@ -13,7 +13,6 @@ endif()
 userver_setup_environment()
 
 file(GLOB_RECURSE PROJECT_CORE_SOURCES CONFIGURE_DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/core/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/dtos/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/routes/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/schemas/*.cpp
