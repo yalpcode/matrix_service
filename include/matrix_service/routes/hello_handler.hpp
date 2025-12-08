@@ -2,8 +2,8 @@
 
 #include <userver/components/component_list.hpp>
 
-namespace service_template {
+namespace matrix_service {
 
 void AppendHello(userver::components::ComponentList& component_list);
 
-}  // namespace service_template
+}  // namespace matrix_service

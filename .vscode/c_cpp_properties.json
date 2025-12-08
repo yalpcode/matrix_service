@@ -8,7 +8,8 @@
             "configurationProvider": "ms-vscode.cmake-tools",
             "includePath": [
                 "${default}",
-                "${workspaceFolder}/include"
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/third_party/userver/**"
             ]
         }
     ],
