@@ -1,4 +1,4 @@
-#include <matrix_service/routes/hello_handler.hpp>
+#include <matrix_service/routes/matrix_mul_handler.hpp>
 #include <userver/clients/dns/component.hpp>
 #include <userver/clients/http/component.hpp>
 #include <userver/components/minimal_server_component_list.hpp>
@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
             .Append<userver::clients::dns::Component>()
             .Append<userver::server::handlers::TestsControl>();
 
-    matrix_service::AppendHello(component_list);
+    matrix_service::AppendMatrixMul(component_list);
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }
