@@ -3,8 +3,8 @@
 #include <string>
 #include <string_view>
 
-namespace service_template {
+namespace matrix_service {
 
 std::string SayHelloTo(std::string_view name);
 
-}  // namespace service_template
+}  // namespace matrix_service

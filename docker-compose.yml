@@ -17,4 +17,4 @@ services:
         ports:
           - 8080:8080
         working_dir: /matrix_service
-        command: ["make", "cmake-debug", "build-debug", "start-debug"]
+        command: ["make", "cmake-debug", "build-debug", "${MAKE_TARGET:-start-debug}"]
