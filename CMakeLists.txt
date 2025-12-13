@@ -1,46 +1,52 @@
 cmake_minimum_required(VERSION 3.12...3.31)
-project(matrix_service CXX)
+project(MatrixService CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(DownloadUserver)
 
-find_package(userver COMPONENTS core QUIET)
+find_package(userver COMPONENTS
+    core
+    QUIET
+)
 if(NOT userver_FOUND)
   # Tries TRY_DIR first, falls back to downloading userver from GitHub using CPM.
-  download_userver(TRY_DIR third_party/userver VERSION 2.8)
+  download_userver(TRY_DIR third_party/userver)
 endif()
 
 userver_setup_environment()
 
-file(GLOB_RECURSE PROJECT_CORE_SOURCES CONFIGURE_DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/dtos/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/routes/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/schemas/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/services/*.cpp
-)
-add_library(${PROJECT_NAME}_objs OBJECT ${PROJECT_CORE_SOURCES})
-target_include_directories(${PROJECT_NAME}_objs PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::core)
 
-file(GLOB PROJECT_MAIN_SOURCE CONFIGURE_DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+# Common sources
+include_directories(src)
+
+add_library(${PROJECT_NAME}_objs OBJECT
+    src/greeting.cpp
+    src/hello.cpp
 )
-add_executable(${PROJECT_NAME} ${PROJECT_MAIN_SOURCE})
+target_link_libraries(${PROJECT_NAME}_objs PUBLIC
+  userver::core
+)
+
+
+
+
+# The Service
+add_executable(${PROJECT_NAME} src/main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
 
-file(GLOB_RECURSE PROJECT_TEST_SOURCES CONFIGURE_DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/*.cpp
+
+# Unit Tests
+add_executable(${PROJECT_NAME}_unittest
+    src/greeting_test.cpp
 )
-add_executable(${PROJECT_NAME}_unittest ${PROJECT_TEST_SOURCES})
 target_link_libraries(${PROJECT_NAME}_unittest PRIVATE ${PROJECT_NAME}_objs userver::utest)
 add_google_tests(${PROJECT_NAME}_unittest)
 
-file(GLOB_RECURSE PROJECT_BENCH_SOURCES CONFIGURE_DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/benchmarks/*.cpp
+
+# Benchmarks
+add_executable(${PROJECT_NAME}_benchmark
+    src/greeting_benchmark.cpp
 )
-add_executable(${PROJECT_NAME}_benchmark ${PROJECT_BENCH_SOURCES})
 target_link_libraries(${PROJECT_NAME}_benchmark PRIVATE ${PROJECT_NAME}_objs userver::ubench)
 add_google_benchmark_tests(${PROJECT_NAME}_benchmark)
 

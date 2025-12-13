@@ -14,6 +14,7 @@ components_manager:
             listener:                 # configuring the main listening socket...
                 port: $server-port            # ...to listen on this port and...
                 task_processor: main-task-processor    # ...process incoming requests on this task processor.
+
         logging:
             fs-task-processor: fs-task-processor
             loggers:
@@ -31,6 +32,8 @@ components_manager:
 
         testsuite-support: {}
 
+        congestion-control:
+
         http-client:
             load-enabled: $is_testing
             fs-task-processor: fs-task-processor
@@ -39,10 +42,11 @@ components_manager:
             fs-task-processor: fs-task-processor
 
         tests-control:
-            load-enabled: $is_testing
+            load-enabled: $is-testing
             path: /tests/{action}
             method: POST
             task_processor: main-task-processor
+
         handler-ping:
             path: /ping
             method: GET
@@ -50,7 +54,7 @@ components_manager:
             throttling_enabled: false
             url_trailing_slash: strict-match
 
-        handler-matrix-mul:
-            path: /matrix-mul
-            method: GET
-            task_processor: main-task-processor
+        handler-hello:                    # Finally! Our handler.
+            path: /hello                  # Registering handler by URL '/hello'.
+            method: GET,POST              # It will only reply to GET (HEAD) and POST requests.
+            task_processor: main-task-processor  # Run it on CPU bound task processor
