@@ -52,7 +52,7 @@ Tensor<T> Tensor<T>::ones(const Shape& shape) {
 }
 
 template <IsArithmetic T>
-template <class U, class>
+template <IsArithmetic U>
 Tensor<T> Tensor<T>::arange(U start, U end, U step) {
     if (step == U{}) {
         throw std::invalid_argument("Step for arange cannot be zero");
