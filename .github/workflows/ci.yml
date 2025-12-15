@@ -7,6 +7,7 @@ name: CI
     push:
         branches:
           - develop
+          - serverside/**
 
 env:
     UBSAN_OPTIONS: print_stacktrace=1
@@ -17,11 +18,11 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                  - os: ubuntu-24.04
+                  - os: ubuntu-22.04
                     make: test-debug
                     info: g++-11 + test-debug
 
-                  - os: ubuntu-24.04
+                  - os: ubuntu-22.04
                     make: test-release
                     info: g++-11 + test-release
 
@@ -47,7 +48,6 @@ jobs:
                 DEPS_FILE="https://raw.githubusercontent.com/userver-framework/userver/refs/heads/develop/scripts/docs/en/deps/${{matrix.os}}.md"
                 sudo apt update
                 sudo apt install --allow-downgrades -y $(wget -q -O - ${DEPS_FILE})
-                python3 -m pip install -r requirements.txt
 
           - name: Setup ccache
             run: |

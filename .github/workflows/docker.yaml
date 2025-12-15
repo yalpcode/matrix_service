@@ -9,6 +9,7 @@ name: Docker build
           - master
           - develop
           - feature/**
+          - serverside/**
 
 jobs:
     tests:

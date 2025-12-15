@@ -1,17 +1,6 @@
-# MatrixService
+# matrix_service
 
 Template of a C++ service that uses [userver framework](https://github.com/userver-framework/userver).
-
-
-## Download and Build
-
-To create your own userver-based service follow the following steps:
-
-1. Press the "Use this template button" at the top right of this GitHub page
-2. Clone the service `git clone your-service-repo && cd your-service-repo && git submodule update --init`
-3. Give a proper name to your service and replace all the occurrences of "MatrixService" string with that name
-4. Feel free to tweak, adjust or fully rewrite the source code of your service.
-
 
 ## Makefile
 
@@ -28,7 +17,6 @@ can also be `debug-custom`, `release-custom`.
 * `make dist-clean` - clean build files and cmake cache
 * `make docker-COMMAND` - run `make COMMAND` in docker environment
 * `make docker-clean-data` - stop docker containers
-
 
 ## License
 
