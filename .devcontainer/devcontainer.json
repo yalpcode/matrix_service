@@ -13,7 +13,7 @@
     ],
     "containerEnv": {
         "SHELL": "/bin/bash",
-        "PREFIX": "${PREFIX:-~/.local}",
+        "PREFIX": "/home/user/matrix_service",
         "CCACHE_DIR": "/home/user/matrix_service/.ccache",
         "CORES_DIR": "/cores"
     },
@@ -42,6 +42,6 @@
             }
         }
     },
-    "onCreateCommand": "sudo git config --global --add safe.directory /home/user/matrix_service",
+    "onCreateCommand": "git config --global --add safe.directory /home/user/matrix_service",
     "mounts": []
 }

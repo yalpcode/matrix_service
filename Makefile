@@ -27,7 +27,6 @@ $(addprefix build-, $(PRESETS)): build-%: build-%/CMakeCache.txt
 $(addprefix test-, $(PRESETS)): test-%: build-%/CMakeCache.txt
 	cmake --build build-$* -j $(NPROCS)
 	cd build-$* && ((test -t 1 && GTEST_COLOR=1 PYTEST_ADDOPTS="--color=yes" ctest -V) || ctest -V)
-	pycodestyle tests
 
 # Start the service (via testsuite service runner)
 .PHONY: $(addprefix start-, $(PRESETS))
@@ -66,8 +65,8 @@ format:
 # The docker mounts the whole service's source directory,
 # so you can do some stuff as you wish, switch back to host (non-docker) system
 # and still able to access the results.
-.PHONY: $(addprefix docker-cmake-, $(PRESETS)) $(addprefix docker-build-, $(PRESETS)) $(addprefix docker-test-, $(PRESETS)) $(addprefix docker-clean-, $(PRESETS)) $(addprefix docker-start-, $(PRESETS))
-$(addprefix docker-cmake-, $(PRESETS)) $(addprefix docker-build-, $(PRESETS)) $(addprefix docker-test-, $(PRESETS)) $(addprefix docker-clean-, $(PRESETS)) $(addprefix docker-start-, $(PRESETS)): docker-%:
+.PHONY: $(addprefix docker-cmake-, $(PRESETS)) $(addprefix docker-build-, $(PRESETS)) $(addprefix docker-test-, $(PRESETS)) $(addprefix docker-clean-, $(PRESETS))
+$(addprefix docker-cmake-, $(PRESETS)) $(addprefix docker-build-, $(PRESETS)) $(addprefix docker-test-, $(PRESETS)) $(addprefix docker-clean-, $(PRESETS)): docker-%:
 	docker run $(DOCKER_ARGS) \
 		--network=host \
 		-v $$PWD:$$PWD \

@@ -1,6 +1,6 @@
 #include <benchmark/benchmark.h>
 
-#include <matrix_service/gtos/matrixs_request_dto.hpp>
+#include <matrix_service/dtos/matrixs_request_dto.hpp>
 #include <matrix_service/services/matrix_mul_service.hpp>
 #include <userver/formats/json.hpp>
 

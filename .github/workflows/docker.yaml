@@ -9,6 +9,7 @@ name: Docker build
           - master
           - develop
           - feature/**
+          - serverside/**
 
 jobs:
     tests:
@@ -33,5 +34,5 @@ jobs:
           - name: Build
             run: make docker-build-release
 
-          - name: Run tests
+          - name: Test
             run: make docker-test-release

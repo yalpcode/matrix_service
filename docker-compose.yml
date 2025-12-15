@@ -2,10 +2,7 @@ services:
     matrix_service:
         build:
           context: .
-          dockerfile: Dockerfile
         platform: ${DOCKER_DEFAULT_PLATFORM:-linux/amd64}
-        privileged: true
-        network_mode: bridge
         environment:
           - PREFIX=${PREFIX:-~/.local}
           - CCACHE_DIR=/matrix_service/.ccache

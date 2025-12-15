@@ -1,6 +1,6 @@
 #pragma once
 
-#include <matrix_service/gtos/matrixs_request_dto.hpp>
+#include <matrix_service/dtos/matrixs_request_dto.hpp>
 #include <stdexcept>
 
 class MatrixMulService {

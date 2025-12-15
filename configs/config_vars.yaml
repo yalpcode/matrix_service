@@ -2,6 +2,6 @@ worker-threads: 4
 worker-fs-threads: 2
 logger-level: info
 
-is_testing: false
+is-testing: false
 
 server-port: 8080
