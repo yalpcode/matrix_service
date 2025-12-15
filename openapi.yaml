@@ -1,0 +1,102 @@
+openapi: 3.0.3
+info:
+  title: Matrix Service API
+  version: 1.0.0
+  description: |
+    API for multiplying two matrices and returning the result as a 2D array.
+servers:
+  - url: http://localhost:8080
+paths:
+  /ping:
+    get:
+      summary: Health check
+      operationId: ping
+      responses:
+        "200":
+          description: Service is running.
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: OK
+  /matrix-mul:
+    get:
+      summary: Multiply two matrices
+      operationId: multiplyMatrices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MatrixMultiplicationRequest"
+            example:
+              left:
+                - [1, 2]
+                - [3, 4]
+              right:
+                - [5, 6]
+                - [7, 8]
+      responses:
+        "200":
+          description: Matrices multiplied successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MatrixMultiplicationResponse"
+              example:
+                result:
+                  - [19, 22]
+                  - [43, 50]
+        "400":
+          description: Bad request, typically due to invalid shapes or empty matrices.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: Matrices have incompatible dimensions for multiplication
+        "500":
+          description: Unexpected server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    Matrix:
+      type: array
+      description: 2D matrix stored as a list of rows.
+      minItems: 1
+      items:
+        type: array
+        minItems: 1
+        items:
+          type: number
+          format: double
+    MatrixMultiplicationRequest:
+      type: object
+      required:
+        - left
+        - right
+      properties:
+        left:
+          $ref: "#/components/schemas/Matrix"
+          description: Left matrix. Must be non-empty.
+        right:
+          $ref: "#/components/schemas/Matrix"
+          description: Right matrix. Column count must match the left matrix row count.
+    MatrixMultiplicationResponse:
+      type: object
+      required:
+        - result
+      properties:
+        result:
+          $ref: "#/components/schemas/Matrix"
+          description: Product of the left and right matrices.
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
