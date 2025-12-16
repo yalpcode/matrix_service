@@ -8,7 +8,11 @@
 #include <vector>
 
 template <class T>
-concept IsArithmetic = std::is_arithmetic_v<T>;
+concept IsArithmeticAux = std::is_arithmetic_v<T>; // это безумие
+
+template <IsArithmeticAux T = double>
+class Tensor;
+
 
 template <IsArithmetic T = double>
 class Tensor;
