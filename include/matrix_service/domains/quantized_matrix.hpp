@@ -7,7 +7,13 @@
 #include <memory>
 #include <vector>
 
-template<class T>
+template <class T>
+concept IsQuantized = std::is_same_v<T, float>;
+
+template <class T>
+concept IsArithmetic = std::is_arithmetic_v<T>;
+
+template <IsArithmetic T = double>
 class Tensor;
 
 class QuantizedMatrix {
