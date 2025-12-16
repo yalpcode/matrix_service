@@ -7,7 +7,8 @@
 #include <memory>
 #include <vector>
 
-#include "tensor.hpp"  // заменить для нормального include
+template<class T>
+class Tensor;
 
 class QuantizedMatrix {
  public:
