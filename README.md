@@ -9,10 +9,7 @@
 
 - `GET /ping` — проверка healthy.
 - `GET /matrix-mul` — умножение матриц; принимает JSON-тело с `left` и `right` (см. `openapi.yaml`).
-- `GET /simple-cnn` — прогон SimpleCNN, на выходе `prediction` (индекс класса после softmax). Параметры запроса (query):
-  - `inputs` (обязательно): строка с JSON массивом формы `[batch, height, width]`; допустим только batch=1, изображения 28x28 (grayscale).
-  - `weights` (опционально): строка с JSON весами `conv1/fc1/fc2` как в `openapi.yaml`; если нет — используются встроенные веса с фиксированным сидом.
-  Тело запроса не используется, данные передаются в query. Максимальный размер запроса — 20 МБ.
+- `POST /simple-cnn` — прогон SimpleCNN, на выходе `prediction` (индекс класса после softmax). Принимает JSON-тело с `inputs` и опциональными `weights` (см. `openapi.yaml`) или multipart/form-data с файлами `inputs`/`weights` (JSON). Требования: batch=1, изображения 28x28 (grayscale). Максимальный размер запроса — 20 МБ.
 
 ## Build/Test
 
