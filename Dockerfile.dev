@@ -1,0 +1,10 @@
+FROM ghcr.io/userver-framework/ubuntu-22.04-userver-pg:v2.8
+
+ARG UID=1000
+ARG GID=1000
+ARG USERNAME=developer
+
+RUN groupadd -g $GID $USERNAME \
+    && useradd -u $UID -g $GID -m -s /bin/bash $USERNAME
+
+USER $UID:$GID
