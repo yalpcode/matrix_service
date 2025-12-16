@@ -1,9 +1,7 @@
-#include <matrix_service/gtos/matrixs_request_dto.hpp>
+#include <matrix_service/dtos/matrixs_request_dto.hpp>
 #include <matrix_service/schemas/matrix_response_schema.hpp>
 #include <matrix_service/services/matrix_mul_service.hpp>
-
 #include <stdexcept>
-
 #include <userver/formats/json/serialize.hpp>
 #include <userver/utest/utest.hpp>
 

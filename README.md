@@ -1,36 +1,26 @@
 **This repository is for userver v2.8 or older versions. For newer versions of userver please use 
 [userver-create-service](https://userver.tech/de/dab/md_en_2userver_2build_2build.html#autotoc_md177) script.**
 
-# service_template
+# Matrix Service
 
-Template of a C++ service that uses [userver framework](https://github.com/userver-framework/userver).
+Сервис на userver, предоставляет перемножение матриц и прямой проход через простую CNN для mnist.
 
+## Endpoints
 
-## Download and Build
+- `GET /ping` — проверка healthy.
+- `GET /matrix-mul` — умножение матриц; принимает JSON-тело с `left` и `right` (см. `openapi.yaml`).
+- `POST /simple-cnn` — прогон SimpleCNN, на выходе `prediction` (индекс класса после softmax). Принимает JSON-тело с `inputs` и опциональными `weights` (см. `openapi.yaml`) или multipart/form-data с файлами `inputs`/`weights` (JSON). Требования: batch=1, изображения 28x28 (grayscale). Максимальный размер запроса — 20 МБ.
 
-To create your own userver-based service follow the following steps:
+## Build/Test
 
-1. Press the "Use this template button" at the top right of this GitHub page
-2. Clone the service `git clone your-service-repo && cd your-service-repo && git submodule update --init`
-3. Give a proper name to your service and replace all the occurrences of "service_template" string with that name
-4. Feel free to tweak, adjust or fully rewrite the source code of your service.
+Make-пресеты:
+- `make cmake-debug` / `make cmake-release`
+- `make build-debug` / `make build-release`
+- `make test-debug` / `make test-release`
 
+Спецификация OpenAPI лежит в `openapi.yaml`. В `docker-compose` есть Swagger UI на `http://localhost:8081`, он монтирует эту схему.
 
-## Makefile
-
-`PRESET` is either `debug`, `release`, or if you've added custom presets in `CMakeUserPresets.json`, it
-can also be `debug-custom`, `release-custom`.
-
-* `make cmake-PRESET` - run cmake configure, update cmake options and source file lists
-* `make build-PRESET` - build the service
-* `make test-PRESET` - build the service and run all tests
-* `make start-PRESET` - build the service, start it in testsuite environment and leave it running
-* `make install-PRESET` - build the service and install it in directory set in environment `PREFIX`
-* `make` or `make all` - build and run all tests in `debug` and `release` modes
-* `make format` - reformat all C++ and Python sources
-* `make dist-clean` - clean build files and cmake cache
-* `make docker-COMMAND` - run `make COMMAND` in docker environment
-* `make docker-clean-data` - stop docker containers
+Для локальной работы предпочтительно `docker compose up` (поднимет сервис и Swagger). Формируйте свои запросы по схемам из `openapi.yaml`, передавая данные в query-параметры.
 
 
 ## License
