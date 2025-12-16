@@ -11,8 +11,7 @@
 #include <utility>
 #include <vector>
 
-template <class T>
-concept IsArithmetic = std::is_arithmetic_v<T>;
+#include "tensor_fwd.hpp"
 
 template <IsArithmetic T = double>
 class Tensor {
@@ -79,7 +78,10 @@ class Tensor {
     Tensor& operator*=(T scalar);
     Tensor operator*(T scalar) const;
 
-    Tensor matmul(const Tensor& other) const;
+    Tensor matmul(const Tensor& other, bool quantize = false) const
+        requires(!IsQuantized<T>);
+    Tensor matmul(const Tensor& other, bool quantize = false) const
+        requires IsQuantized<T>;
 
     Tensor sum() const;
     Tensor sum(size_t dim) const;
