@@ -1,8 +1,8 @@
 #include "neon_gemm.hpp"
 
 // Конвертация результата в QuantizedMatrix
-QuantizedMatrix NeonGEMM::QuantizedResult::to_qmatrix(float output_scale,
-                                                      int32_t output_zp) const {
+inline QuantizedMatrix NeonGEMM::QuantizedResult::to_qmatrix(
+    float output_scale, int32_t output_zp) const {
     std::vector<int8_t> q_data(data.size());
     QuantizedMatrix::QuantParams out_params(output_scale, output_zp);
 
@@ -18,7 +18,7 @@ QuantizedMatrix NeonGEMM::QuantizedResult::to_qmatrix(float output_scale,
 }
 
 // Основное умножение
-NeonGEMM::QuantizedResult NeonGEMM::multiply(
+inline NeonGEMM::QuantizedResult NeonGEMM::multiply(
     const QuantizedMatrix& A, const QuantizedMatrix& B,
     const NeonGEMM::GemmParams& params) {
     size_t m = A.rows();
@@ -56,15 +56,16 @@ NeonGEMM::QuantizedResult NeonGEMM::multiply(
     return {C, m, n, result_params};
 }
 
-NeonGEMM::QuantizedResult NeonGEMM::multiply(const QuantizedMatrix& A,
-                                             const QuantizedMatrix& B) {
+inline NeonGEMM::QuantizedResult NeonGEMM::multiply(const QuantizedMatrix& A,
+                                                    const QuantizedMatrix& B) {
     return NeonGEMM::multiply(A, B, NeonGEMM::GemmParams{});
 }
 
 #if __ARM_NEON
-void NeonGEMM::micro_kernel_8x12x4(const int8_t* A_ptr, const int8_t* B_ptr,
-                                   int32_t* C_ptr, size_t ldc, int32_t zp_a,
-                                   int32_t zp_b) {
+inline void NeonGEMM::micro_kernel_8x12x4(const int8_t* A_ptr,
+                                          const int8_t* B_ptr, int32_t* C_ptr,
+                                          size_t ldc, int32_t zp_a,
+                                          int32_t zp_b) {
     int32x4_t v_zp_a = vdupq_n_s32(zp_a);
     int32x4_t v_zp_b = vdupq_n_s32(zp_b);
 
@@ -179,10 +180,9 @@ void NeonGEMM::micro_kernel_8x12x4(const int8_t* A_ptr, const int8_t* B_ptr,
 }
 #endif
 // Упрощенная версия микроядра (для неполных блоков)
-void NeonGEMM::micro_kernel_simple(const int8_t* A_ptr, const int8_t* B_ptr,
-                                   int32_t* C_ptr, size_t mc, size_t nc,
-                                   size_t kc, size_t ldc, int32_t zp_a,
-                                   int32_t zp_b) {
+inline void NeonGEMM::micro_kernel_simple(
+    const int8_t* A_ptr, const int8_t* B_ptr, int32_t* C_ptr, size_t mc,
+    size_t nc, size_t kc, size_t ldc, int32_t zp_a, int32_t zp_b) {
     std::vector<std::vector<int32_t>> acc(mc, std::vector<int32_t>(nc, 0));
 
     for (size_t i = 0; i < mc; ++i) {
@@ -204,13 +204,11 @@ void NeonGEMM::micro_kernel_simple(const int8_t* A_ptr, const int8_t* B_ptr,
     }
 }
 
-void NeonGEMM::compute_block_neon(const QuantizedMatrix& A,
-                                  const QuantizedMatrix& B, int32_t* C,
-                                  size_t i_start, size_t j_start,
-                                  size_t p_start, size_t mc, size_t nc,
-                                  size_t kc, size_t n,
-                                  int32_t zp_a, int32_t zp_b,
-                                  const GemmParams& params) {
+inline void NeonGEMM::compute_block_neon(
+    const QuantizedMatrix& A, const QuantizedMatrix& B, int32_t* C,
+    size_t i_start, size_t j_start, size_t p_start, size_t mc, size_t nc,
+    size_t kc, size_t n, int32_t zp_a, int32_t zp_b,
+    const GemmParams& params) {
     const int8_t* A_data = A.data();
     const int8_t* B_data = B.data();
 

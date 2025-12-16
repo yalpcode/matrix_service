@@ -2,32 +2,32 @@
 #include "tensor.hpp"
 
 // Параметры квантования (scale и zero-point)
-QuantizedMatrix::QuantParams::QuantParams(float s, int32_t zp)
+inline QuantizedMatrix::QuantParams::QuantParams(float s, int32_t zp)
     : scale(s), zero_point(zp) {
 }
 
 // Квантование float -> int8
-int8_t QuantizedMatrix::QuantParams::quantize(float value) const {
+inline int8_t QuantizedMatrix::QuantParams::quantize(float value) const {
     float q = value / scale + static_cast<float>(zero_point);
     return static_cast<int8_t>(std::clamp(std::round(q), -128.0f, 127.0f));
 }
 
 // Деквантование int8 -> float
-float QuantizedMatrix::QuantParams::dequantize(int8_t value) const {
+inline float QuantizedMatrix::QuantParams::dequantize(int8_t value) const {
     return scale * (static_cast<float>(value) - static_cast<float>(zero_point));
 }
 
 // Деквантование int32 -> float (для аккумуляторов)
-float QuantizedMatrix::QuantParams::dequantize(int32_t value) const {
+inline float QuantizedMatrix::QuantParams::dequantize(int32_t value) const {
     return scale * (static_cast<float>(value) - static_cast<float>(zero_point));
 }
 
 // Конструктор по умолчанию
-QuantizedMatrix::QuantizedMatrix() = default;
+inline QuantizedMatrix::QuantizedMatrix() = default;
 
 // Из обычной матрицы float32
-QuantizedMatrix::QuantizedMatrix(size_t rows, size_t cols,
-                                 const std::vector<float>& data)
+inline QuantizedMatrix::QuantizedMatrix(size_t rows, size_t cols,
+                                        const std::vector<float>& data)
     : rows_(rows), cols_(cols) {
     float min_val = *std::min_element(data.begin(), data.end());
     float max_val = *std::max_element(data.begin(), data.end());
@@ -43,16 +43,16 @@ QuantizedMatrix::QuantizedMatrix(size_t rows, size_t cols,
 }
 
 // Создание с заданными параметрами
-QuantizedMatrix::QuantizedMatrix(size_t rows, size_t cols,
-                                 const std::vector<int8_t>& data,
-                                 QuantParams params)
+inline QuantizedMatrix::QuantizedMatrix(size_t rows, size_t cols,
+                                        const std::vector<int8_t>& data,
+                                        QuantParams params)
     : rows_(rows), cols_(cols), data_(data), params_(params) {
     data_.resize(rows * cols);
 }
 
 // Конструктор из тензора (предполагаем что это уже im2col результат) с
 // симметричным квантованием
-QuantizedMatrix::QuantizedMatrix(const Tensor<float> tensor) {
+inline QuantizedMatrix::QuantizedMatrix(const Tensor<float> tensor) {
     if (tensor.dim() != 2) {
         throw std::invalid_argument("Tensor must be 2D for QuantizedMatrix");
     }
@@ -82,51 +82,51 @@ QuantizedMatrix::QuantizedMatrix(const Tensor<float> tensor) {
 }
 
 // Создание нулевой матрицы
-QuantizedMatrix QuantizedMatrix::zeros(size_t rows, size_t cols,
-                                       QuantParams params) {
+inline QuantizedMatrix QuantizedMatrix::zeros(size_t rows, size_t cols,
+                                              QuantParams params) {
     return QuantizedMatrix(rows, cols, std::vector<int8_t>(rows * cols, 0),
                            params);
 }
 
 // Доступ к элементам
-int8_t QuantizedMatrix::at(size_t row, size_t col) const {
+inline int8_t QuantizedMatrix::at(size_t row, size_t col) const {
     return data_[row * cols_ + col];
 }
-int8_t& QuantizedMatrix::at(size_t row, size_t col) {
+inline int8_t& QuantizedMatrix::at(size_t row, size_t col) {
     return data_[row * cols_ + col];
 }
 
 // Получение float значения
-float QuantizedMatrix::get_float(size_t row, size_t col) const {
+inline float QuantizedMatrix::get_float(size_t row, size_t col) const {
     return params_.dequantize(at(row, col));
 }
 
 // Размеры
-size_t QuantizedMatrix::rows() const {
+inline size_t QuantizedMatrix::rows() const {
     return rows_;
 }
-size_t QuantizedMatrix::cols() const {
+inline size_t QuantizedMatrix::cols() const {
     return cols_;
 }
-size_t QuantizedMatrix::size() const {
+inline size_t QuantizedMatrix::size() const {
     return rows_ * cols_;
 }
 
 // Прямой доступ к данным
-const int8_t* QuantizedMatrix::data() const {
+inline const int8_t* QuantizedMatrix::data() const {
     return data_.data();
 }
-int8_t* QuantizedMatrix::data() {
+inline int8_t* QuantizedMatrix::data() {
     return data_.data();
 }
 
 // Параметры квантования
-const QuantizedMatrix::QuantParams& QuantizedMatrix::quant_params() const {
+inline const QuantizedMatrix::QuantParams& QuantizedMatrix::quant_params() const {
     return params_;
 }
 
 // Деквантование всей матрицы
-std::vector<float> QuantizedMatrix::dequantize() const {
+inline std::vector<float> QuantizedMatrix::dequantize() const {
     std::vector<float> result(data_.size());
     for (size_t i = 0; i < data_.size(); ++i) {
         result[i] = params_.dequantize(data_[i]);
@@ -134,13 +134,13 @@ std::vector<float> QuantizedMatrix::dequantize() const {
     return result;
 }
 
-Tensor<float> QuantizedMatrix::dequantize_to_tensor() const {
+inline Tensor<float> QuantizedMatrix::dequantize_to_tensor() const {
     std::vector<float> float_data = dequantize();
     return Tensor<float>({rows_, cols_}, std::move(float_data));
 }
 
 // Вывод в консоль (для отладки)
-void QuantizedMatrix::print(size_t max_rows, size_t max_cols) const {
+inline void QuantizedMatrix::print(size_t max_rows, size_t max_cols) const {
     std::cout << "QuantizedMatrix " << rows_ << "x" << cols_
               << " (scale=" << params_.scale << ", zp=" << params_.zero_point
               << ")\n";
