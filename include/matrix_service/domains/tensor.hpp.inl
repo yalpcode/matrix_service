@@ -1,3 +1,5 @@
+#include "neon_gemm.hpp"
+#include "quantized_matrix.hpp"
 #include "tensor.hpp"
 
 template <IsArithmetic T>
@@ -347,7 +349,9 @@ Tensor<T> Tensor<T>::operator*(T scalar) const {
 }
 
 template <IsArithmetic T>
-Tensor<T> Tensor<T>::matmul(const Tensor& other) const {
+Tensor<T> Tensor<T>::matmul(const Tensor<T>& other, bool quantize) const
+    requires(!IsQuantized<T>)
+{
     if (dim() == 1 && other.dim() == 1) {
         if (shape_[0] != other.shape_[0]) {
             throw std::invalid_argument("Vector sizes must match for dot");
@@ -409,6 +413,83 @@ Tensor<T> Tensor<T>::matmul(const Tensor& other) const {
             }
         }
         return result;
+    }
+
+    throw std::invalid_argument(
+        "Matmul is implemented for 1D and 2D tensors only");
+}
+
+template <IsArithmetic T>
+Tensor<T> Tensor<T>::matmul(const Tensor<T>& other, bool quantize) const
+    requires IsQuantized<T>
+{
+    if (quantize == true) {
+        QuantizedMatrix A(*this);
+        QuantizedMatrix B(other);
+        auto result = NeonGEMM::multiply(A, B);
+        return result.to_qmatrix(1, 0).dequantize_to_tensor();
+    }
+
+    if (dim() == 1 && other.dim() == 1) {
+        if (shape_[0] != other.shape_[0]) {
+            throw std::invalid_argument("Vector sizes must match for dot");
+        }
+        T acc{};
+        for (size_t i = 0; i < shape_[0]; ++i) {
+            acc += at({i}) * other.at({i});
+        }
+        return Tensor({}, std::vector<T>{acc});
+    }
+
+    if (dim() == 2 && other.dim() == 1) {
+        if (shape_[1] != other.shape_[0]) {
+            throw std::invalid_argument(
+                "Matrix columns must match vector size for matmul");
+        }
+
+        Tensor result({shape_[0]}, T{});
+        for (size_t i = 0; i < shape_[0]; ++i) {
+            T acc{};
+            for (size_t k = 0; k < shape_[1]; ++k) {
+                acc += at({i, k}) * other.at({k});
+            }
+            result.at({i}) = acc;
+        }
+        return result;
+    }
+
+    if (dim() == 1 && other.dim() == 2) {
+        if (shape_[0] != other.shape_[0]) {
+            throw std::invalid_argument(
+                "Vector size must match matrix rows for matmul");
+        }
+        Tensor result({other.shape_[1]}, T{});
+        for (size_t j = 0; j < other.shape_[1]; ++j) {
+            T acc{};
+            for (size_t i = 0; i < shape_[0]; ++i) {
+                acc += at({i}) * other.at({i, j});
+            }
+            result.at({j}) = acc;
+        }
+        return result;
+    }
+
+    if (dim() == 2 && other.dim() == 2) {
+        if (shape_[1] != other.shape_[0]) {
+            throw std::invalid_argument(
+                "Inner matrix dimensions must agree for matmul");
+        }
+
+        Tensor result({shape_[0], other.shape_[1]}, T{});
+        for (size_t i = 0; i < shape_[0]; ++i) {
+            for (size_t j = 0; j < other.shape_[1]; ++j) {
+                T acc{};
+                for (size_t k = 0; k < shape_[1]; ++k) {
+                    acc += at({i, k}) * other.at({k, j});
+                }
+                result.at({i, j}) = acc;
+            }
+        }
     }
 
     throw std::invalid_argument(
