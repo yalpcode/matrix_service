@@ -48,8 +48,7 @@ NeonGEMM::QuantizedResult NeonGEMM::multiply(
             for (size_t ic = 0; ic < m; ic += params.mc) {
                 size_t mc = std::min(params.mc, m - ic);
 
-                compute_block_neon(A, B, C.data(), ic, jc, pc, mc, nc, kc, m, n,
-                                   k, zp_a, zp_b, params);
+                compute_block_neon(A, B, C.data(), ic, jc, pc, mc, nc, kc, n, zp_a, zp_b, params);
             }
         }
     }
@@ -209,7 +208,7 @@ void NeonGEMM::compute_block_neon(const QuantizedMatrix& A,
                                   const QuantizedMatrix& B, int32_t* C,
                                   size_t i_start, size_t j_start,
                                   size_t p_start, size_t mc, size_t nc,
-                                  size_t kc, size_t m, size_t n, size_t k,
+                                  size_t kc, size_t n,
                                   int32_t zp_a, int32_t zp_b,
                                   const GemmParams& params) {
     const int8_t* A_data = A.data();
@@ -239,7 +238,7 @@ void NeonGEMM::compute_block_neon(const QuantizedMatrix& A,
                     // Полный блок - используем оптимизированное ядро
                     micro_kernel_8x12x4(A_block, B_block, C_block, ldc, zp_a,
                                         zp_b);
-                    #elif
+                    #else
                     micro_kernel_simple(A_block, B_block, C_block, mr, nr, kr,
                                         ldc, zp_a, zp_b);
                     #endif
