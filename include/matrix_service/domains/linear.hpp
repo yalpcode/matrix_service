@@ -25,6 +25,8 @@ class Linear {
         return bias_;
     }
 
+    void load_weights(TensorType weight, TensorType bias);
+
  private:
     size_t in_features_;
     size_t out_features_;
