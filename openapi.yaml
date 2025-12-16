@@ -61,6 +61,70 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /simple-cnn:
+    post:
+      summary: Run SimpleCNN forward pass
+      operationId: simpleCnnForward
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SimpleCnnRequest"
+            example:
+              inputs:
+                - [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+              weights:
+                conv1:
+                  weight:
+                    - # filter 0, single channel
+                      - [[-0.1, 0.0, 0.1],
+                         [-0.2, 0.0, 0.2],
+                         [-0.1, 0.0, 0.1]]
+                  bias: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                fc1:
+                  weight: [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+                  bias: [0.0, 0.0]
+                fc2:
+                  weight: [[0.0, 0.0], [0.0, 0.0]]
+                  bias: [0.0, 0.0]
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                inputs:
+                  type: string
+                  format: binary
+                  description: File containing JSON array of images shaped [batch, height, width]
+                weights:
+                  type: string
+                  format: binary
+                  description: Optional file containing JSON weights with the same shape as SimpleCnnRequest.weights
+              required:
+                - inputs
+      responses:
+        "200":
+          description: Predicted class index (softmax applied, batch size 1).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimpleCnnResponse"
+              example:
+                prediction: 5
+        "400":
+          description: Bad request, typically due to invalid shapes.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "SimpleCNN expects 28x28 spatial size"
+        "500":
+          description: Unexpected server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     Matrix:
@@ -100,3 +164,107 @@ components:
           type: string
       required:
         - message
+    SimpleCnnRequest:
+      type: object
+      required:
+        - inputs
+      properties:
+        inputs:
+          type: array
+          minItems: 1
+          description: Batch of grayscale images shaped [batch, height, width]. Must be 28x28 for each image.
+          items:
+            type: array
+            minItems: 28
+            items:
+              type: array
+              minItems: 28
+              items:
+                type: number
+                format: double
+        weights:
+          type: object
+          description: Optional weights to override default random initialization.
+          properties:
+            conv1:
+              type: object
+              required: [weight, bias]
+              properties:
+                weight:
+                  type: array
+                  minItems: 32
+                  maxItems: 32
+                  items:
+                    type: array
+                    minItems: 1
+                    maxItems: 1
+                    items:
+                      type: array
+                      minItems: 3
+                      maxItems: 3
+                      items:
+                        type: array
+                        minItems: 3
+                        maxItems: 3
+                        items:
+                          type: number
+                          format: double
+                bias:
+                  type: array
+                  minItems: 32
+                  maxItems: 32
+                  items:
+                    type: number
+                    format: double
+            fc1:
+              type: object
+              required: [weight, bias]
+              properties:
+                weight:
+                  type: array
+                  minItems: 128
+                  maxItems: 128
+                  items:
+                    type: array
+                    minItems: 6272
+                    maxItems: 6272
+                    items:
+                      type: number
+                      format: double
+                bias:
+                  type: array
+                  minItems: 128
+                  maxItems: 128
+                  items:
+                    type: number
+                    format: double
+            fc2:
+              type: object
+              required: [weight, bias]
+              properties:
+                weight:
+                  type: array
+                  minItems: 10
+                  maxItems: 10
+                  items:
+                    type: array
+                    minItems: 128
+                    maxItems: 128
+                    items:
+                      type: number
+                      format: double
+                bias:
+                  type: array
+                  minItems: 10
+                  maxItems: 10
+                  items:
+                    type: number
+                    format: double
+    SimpleCnnResponse:
+      type: object
+      required: [prediction]
+      properties:
+        prediction:
+          type: integer
+          format: int32
+          description: Predicted class index for the single input sample

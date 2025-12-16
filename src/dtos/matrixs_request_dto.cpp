@@ -1,8 +1,7 @@
+#include <matrix_service/dtos/matrixs_request_dto.hpp>
 #include <stdexcept>
-#include <vector>
-
-#include <matrix_service/gtos/matrixs_request_dto.hpp>
 #include <userver/formats/parse/common_containers.hpp>
+#include <vector>
 
 MatrixsRequestDTO::MatrixsRequestDTO(const userver::formats::json::Value& json)
     : matrix_left(json["left"].As<std::vector<std::vector<double>>>()),

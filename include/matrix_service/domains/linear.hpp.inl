@@ -32,6 +32,19 @@ Linear<T>::Linear(size_t in_features, size_t out_features, bool bias)
 }
 
 template <class T>
+void Linear<T>::load_weights(typename Linear<T>::TensorType weight,
+                             typename Linear<T>::TensorType bias) {
+    if (weight.shape() != TensorType({out_features_, in_features_}).shape()) {
+        throw std::invalid_argument("Linear weight shape mismatch");
+    }
+    if (bias.shape() != TensorType({out_features_}).shape()) {
+        throw std::invalid_argument("Linear bias shape mismatch");
+    }
+    weight_ = std::move(weight);
+    bias_ = std::move(bias);
+}
+
+template <class T>
 typename Linear<T>::TensorType Linear<T>::forward(
     const Linear<T>::TensorType& input) const {
     if (input.dim() != 2) {
