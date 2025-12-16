@@ -7,14 +7,9 @@
 #include <memory>
 #include <vector>
 
-template <class T>
-concept IsArithmeticAux = std::is_arithmetic_v<T>; // это безумие
+#include "tensor_fwd.hpp"
 
-template <IsArithmeticAux T = double>
-class Tensor;
-
-
-template <IsArithmetic T = double>
+template <IsArithmetic T>
 class Tensor;
 
 class QuantizedMatrix {

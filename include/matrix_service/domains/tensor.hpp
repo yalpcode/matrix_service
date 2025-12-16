@@ -11,11 +11,7 @@
 #include <utility>
 #include <vector>
 
-template <class T>
-concept IsQuantized = std::is_same_v<T, float>;
-
-template <class T>
-concept IsArithmetic = std::is_arithmetic_v<T>;
+#include "tensor_fwd.hpp"
 
 template <IsArithmetic T = double>
 class Tensor {

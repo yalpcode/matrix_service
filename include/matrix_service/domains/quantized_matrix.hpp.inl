@@ -1,4 +1,5 @@
 #include "quantized_matrix.hpp"
+#include "tensor.hpp"
 
 // Параметры квантования (scale и zero-point)
 QuantizedMatrix::QuantParams::QuantParams(float s, int32_t zp)
